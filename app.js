@@ -18,7 +18,7 @@ bot.dialog('/', [
 bot.dialog('/promptButtons', [
     function (session) {
         var choices = ["Musician Explorer", "Musician Search"]
-        builder.Prompts.choice(session, "How would you like to explore AI World?", choices);
+        builder.Prompts.choice(session, "How would you like to explore the classical music bot?", choices);
     },
     function (session, results) {
         if (results.response) {

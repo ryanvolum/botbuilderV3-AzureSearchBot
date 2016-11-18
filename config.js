@@ -1,5 +1,8 @@
 module.exports = function () {
-    global.searchKey = "E96AC4DD9C655A6D490E3CF6A4CB947E";
-    global.searchName = "botsearchdemo";
-    global.indexName = "musicianindex";
+    //process.env variables defined in Azure if deployed to a web app. For testing, place IDs and Keys inline
+    global.searchName = process.env.AZURE_SEARCH_NAME ? process.env.AZURE_SEARCH_NAME : "<YourSearchName>";
+    global.indexName = process.env.INDEX_NAME ? process.env.AZURE_SEARCH_NAME : "<YourIndexName>";
+    global.searchKey = process.env.INDEX_NAME ? process.env.AZURE_SEARCH_KEY : "<YourSearchKey>";
+    
+    global. queryString = 'https://' + searchName + '.search.windows.net/indexes/' + indexName + '/docs?api-key=' + searchKey + '&api-version=2015-02-28&';
 }

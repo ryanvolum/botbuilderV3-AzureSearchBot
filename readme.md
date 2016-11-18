@@ -7,15 +7,16 @@ In this demo I'll demonstrate how to use Azure Document DB, Azure Search and the
 More and more frequently we're seeing the value in bots that can reason over underlying data. These bots can help provide users with information about events, products, telemetry etc. Where it's certainly possible to connect a bot directly to a database and perform queries against it, we've found that using a search engine over our data is particularly helpful for two big things: 
 
 1. Indexing and searching an underlying dataset to return the results that best match user input. 
-..1. Fuzzy search keeps users from having to type exact matches (e.g. "who is jennifer?" instead of "jennifer marsman", "impala" instead of "Tame Impala")
 
-<img src="./images/fuzzySearch.png" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
-<img src="./images/fuzzySearch2.png" alt="Screenshot" style="width: 530px;"/>
+    * For one, fuzzy search keeps users from having to type exact matches (e.g. "who is jennifer?" instead of "jennifer marsman", "impala" instead of "Tame Impala")
 
-..2. Search scores allow us to determine the confidence that we have about a specific search - allowing us to decide whether a piece of data is what a user is looking, order results based on our confidence, and curb our bot output based on confidence (e.g. "Hmm... were you looking for any of these events?" vs "Here is the event that best matches your search:") 
+        <img src="./images/fuzzySearch.png" alt="Screenshot" style="width: 300px"/>
+        <img src="./images/fuzzySearch2.png" alt="Screenshot" style="width: 530px"/>
 
-<img src="./images/searchScore1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
-<img src="./images/searchScore2.png" alt="Screenshot" style="width: 536px;"/>
+    * Search scores allow us to determine the confidence that we have about a specific search - allowing us to decide whether a piece of data is what a user is looking, order results based on our confidence, and curb our bot output based on confidence (e.g. "Hmm... were you looking for any of these events?" vs "Here is the event that best matches your search:") 
+
+        <img src="./images/searchScore1.png" alt="Screenshot" style="width: 500px "/>
+        <img src="./images/searchScore2.png" alt="Screenshot" style="width: 536px"/>
 
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for

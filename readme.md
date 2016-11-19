@@ -6,24 +6,24 @@ In this demo I'll demonstrate how to use Azure Document DB, Azure Search and the
 ## Background
 More and more frequently we're seeing the value in bots that can reason over underlying data. These bots can help provide users with information about events, products, telemetry etc. Where it's certainly possible to connect a bot directly to a database and perform queries against it, we've found that using a search engine over our data is particularly helpful for two big things: 
 
-    1. Indexing and searching an underlying dataset to return the results that best match user input. 
+    * Indexing and searching an underlying dataset to return the results that best match user input. 
 
 For one, fuzzy search keeps users from having to type exact matches (e.g. "who is jennifer?" instead of "jennifer marsman", "impala" instead of "Tame Impala")
 
-        <img src="https://github.com/ryanvolum/AzureSearchBot/blob/master/images/fuzzySearch.PNG" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
-        <img src="https://github.com/ryanvolum/AzureSearchBot/blob/master/images/fuzzySearch2.PNG" alt="Screenshot" style="width: 530px;"/>
+        <img src="./images/fuzzySearch.PNG" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
+        <img src="./images/fuzzySearch2.PNG" alt="Screenshot" style="width: 530px;"/>
 
-    2. Search scores allow us to determine the confidence that we have about a specific search - allowing us to decide whether a piece of data is what a user is looking, order results based on our confidence, and curb our bot output based on confidence (e.g. "Hmm... were you looking for any of these events?" vs "Here is the event that best matches your search:") 
+    * Search scores allow us to determine the confidence that we have about a specific search - allowing us to decide whether a piece of data is what a user is looking, order results based on our confidence, and curb our bot output based on confidence (e.g. "Hmm... were you looking for any of these events?" vs "Here is the event that best matches your search:") 
 
-<img src="./images/searchScore1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
-<img src="./images/searchScore2.png" alt="Screenshot" style="width: 536px;"/>
+<img src="./images/searchScore1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/searchScore2.PNG" alt="Screenshot" style="width: 536px;"/>
 
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for
 
-<img src="./images/guidedConvo1.png" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
-<img src="./images/guidedConvo2.png" alt="Screenshot" style="width: 300px;"/>
-<img src="./images/guidedConvo3.png" alt="Screenshot" style="width: 300px;"/>
+<img src="./images/guidedConvo1.PNG" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
+<img src="./images/guidedConvo2.PNG" alt="Screenshot" style="width: 300px;"/>
+<img src="./images/guidedConvo3.PNG" alt="Screenshot" style="width: 300px;"/>
 
 I'm going to demonstrate the creation of a simple bot that searches and filters over a dataset of classical musicians. First we'll set up our database, then we'll create our search service, and then we'll build our bot.
 
@@ -33,15 +33,15 @@ I'll start by noting the musicianData JSON file found in the data folder of this
 ### Create a Document DB database and collection. 
 1. Navigate to Document DB in the Azure Portal 
 
-<img src="./images/docDB1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/docDB1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
                                   
 2. Create Doc DB account
 
-<img src="./images/docDB2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/docDB2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 3. Create collection/add new DB
 
-<img src="./images/docDB3.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/docDB3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 
 ### Upload JSON data
@@ -50,46 +50,46 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
 
 1. Once you've got the tool, navigate to the musician JSON data: 
 
-<img src="./images/dtui1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/dtui1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 2. Fill in target information
 
 ..1. Get connection strings from portal
 
-<img src="./images/dtui2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/dtui2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 ..2. Be sure to add Database = <DatabaseName>; to your connection string
 
-<img src="./images/dtui3.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/dtui3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 ..3. Then upload your data: 
 
-<img src="./images/dtui4.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/dtui4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 To see that our data has uploaded, we can go back to the portal, click query explorer and run the default query (SELECT * FROM c). 
 
-<img src="./images/queryexplorer1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/queryexplorer1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 3. Create Azure Search index
 
 ..1. Create an Azure Search service
 
-<img src="./images/search1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 ..2. Import Data from your Document DB collection
 
-<img src="./images/search2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
     
 ..3. Create your Azure Search index
     Here's where the magic starts to happen. You can see that Azure Search has accessed our data and pulled in each parameter of the JSON objects. Now we get to decide which of these parameters we want to search over, facet over, filter by and retrieve. Again we could generate our indeces programically, and in more complex use cases we would, but for the sake of simplicity we'll stick to the portal UI. Given that we want access to all of these properties we'll go ahead and make them all retrievable. We want to be able to facet (more details about faceting to come) and filter over musician's eras. Finally, we'll mark name as searchable so that our bot can search for musicians by their names. 
     
-<img src="./images/search3.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 ..4. Create your Azure Search indexer
     As our data is subject to change, we need to be able to reindex that data. Azure Search allows you to index on a schedule or on demand, but for this demo
     we'll index once only.
 
-<img src="./images/search4.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 ..5. Use the Search explorer
 
@@ -101,7 +101,7 @@ To see that our data has uploaded, we can go back to the portal, click query exp
 
     Given that our index searches over musician name, a search of "Frederic" returns the information for "Frederic Chopin" along with a search score. The search score represents the confidence that Azure Search has regarding each result. 
 
-<img src="./images/search5.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search5.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
     
     If we search instead for "Johannes", we will get two pertinent results: one for Johannes Sebastian Bach and the other for Johannes Brahms
 
@@ -109,13 +109,13 @@ To see that our data has uploaded, we can go back to the portal, click query exp
 
     Faceting allows us to see the different examples of a parameter and their corresponding counts. You can see here that the JSON response from the search API tells us that there are 11 Romantic musicians, 3 Classical musicians, 2 Baroque musicians and 1 Modernist musician:
             
-<img src="./images/search7.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search7.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
     This information will allow us to guide the conversation our bot can have. If a user wishes to see musicians by era, our bot can quickly and efficiently find all the eras that are possible and present them as options to the user. 
 
 ..* $filter=Era eq 'Romantic'
 
-<img src="./images/search6.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/search6.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 4. Build your Bot
 
@@ -280,17 +280,17 @@ Finally, let's test our bot out. Either deploy your bot to an Azure web app and 
 
 Musician Explorer functionality: 
 
-<img src="./images/musicianExplorer1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/musicianExplorer1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 <br>
-<img src="./images/musicianExplorer2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/musicianExplorer2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 Note that the search scores returned with the filtered results are always 1. This is because a filter is essentially an exact match
 
 Musician Search functionality
 
-<img src="./images/musicianSearch1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/musicianSearch1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 <br>
-<img src="./images/musicianSearch2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="./images/musicianSearch2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 
 

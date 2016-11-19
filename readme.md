@@ -6,9 +6,9 @@ In this demo I'll demonstrate how to use Azure Document DB, Azure Search and the
 ## Background
 More and more frequently we're seeing the value in bots that can reason over underlying data. These bots can help provide users with information about events, products, telemetry etc. Where it's certainly possible to connect a bot directly to a database and perform queries against it, we've found that using a search engine over our data is particularly helpful for two big things: 
 
-    * Indexing and searching an underlying dataset to return the results that best match user input. 
+1. Indexing and searching an underlying dataset to return the results that best match user input. 
 
-For one, fuzzy search keeps users from having to type exact matches (e.g. "who is jennifer?" instead of "jennifer marsman", "impala" instead of "Tame Impala")
+    * For one, fuzzy search keeps users from having to type exact matches (e.g. "who is jennifer?" instead of "jennifer marsman", "impala" instead of "Tame Impala")
 
         <img src="./images/fuzzySearch.PNG" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
         <img src="./images/fuzzySearch2.PNG" alt="Screenshot" style="width: 530px;"/>
@@ -21,9 +21,9 @@ For one, fuzzy search keeps users from having to type exact matches (e.g. "who i
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for
 
-<img src="./images/guidedConvo1.PNG" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
-<img src="./images/guidedConvo2.PNG" alt="Screenshot" style="width: 300px;"/>
-<img src="./images/guidedConvo3.PNG" alt="Screenshot" style="width: 300px;"/>
+<img src="./images/guidedConvo1.png" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
+<img src="./images/guidedConvo2.png" alt="Screenshot" style="width: 300px;"/>
+<img src="./images/guidedConvo3.png" alt="Screenshot" style="width: 300px;"/>
 
 I'm going to demonstrate the creation of a simple bot that searches and filters over a dataset of classical musicians. First we'll set up our database, then we'll create our search service, and then we'll build our bot.
 

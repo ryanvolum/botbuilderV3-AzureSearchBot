@@ -1,5 +1,4 @@
 # Using Search to Create Data Driven Bots
----
 
 In this demo I'll demonstrate how to use Azure Document DB, Azure Search and the Microsoft Bot Framework to build a bot that searches and filters over an underlying dataset.
 

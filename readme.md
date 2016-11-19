@@ -67,7 +67,7 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
 
         <img src="./images/dtui4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
-    To see that our data has uploaded, we can go back to the portal, click query explorer and run the default query (SELECT * FROM c). 
+    To see that our data has uploaded, we can go back to the portal, click query explorer and run the default query `SELECT * FROM c`:
         <img src="./images/queryexplorer1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 3. Create your Azure Search index
@@ -97,7 +97,7 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
     
     Let's try three different queries:
     
-    * "Frederic"
+    * `"Frederic"`
 
     Given that our index searches over musician name, a search of "Frederic" returns the information for "Frederic Chopin" along with a search score. The search score represents the confidence that Azure Search has regarding each result. 
 
@@ -105,7 +105,7 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
     
     If we search instead for "Johannes", we will get two pertinent results: one for Johannes Sebastian Bach and the other for Johannes Brahms
 
-    * facet=Era
+    * `facet=Era`
 
     Faceting allows us to see the different examples of a parameter and their corresponding counts. You can see here that the JSON response from the search API tells us that there are 11 Romantic musicians, 3 Classical musicians, 2 Baroque musicians and 1 Modernist musician:
             
@@ -113,7 +113,7 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
 
     This information will allow us to guide the conversation our bot can have. If a user wishes to see musicians by era, our bot can quickly and efficiently find all the eras that are possible and present them as options to the user. 
 
-    * $filter=Era eq 'Romantic'
+    * `$filter=Era eq 'Romantic'`
 
     <img src="./images/search6.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 

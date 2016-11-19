@@ -21,6 +21,7 @@ More and more frequently we're seeing the value in bots that can reason over und
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for
 
+![Fuzzy Search](./images/fuzzySearch2.png)
 <img src="./images/guidedConvo1.png" alt="Screenshot" style="width: 200px; padding-left: 40px;"/>
 <img src="./images/guidedConvo2.png" alt="Screenshot" style="width: 200px;"/>
 <img src="./images/guidedConvo3.png" alt="Screenshot" style="width: 200px;"/>

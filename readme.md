@@ -20,10 +20,10 @@ More and more frequently we're seeing the value in bots that can reason over und
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for. In this example, we use search to determine all of the facets of the underlying database's fields to quickly guide the conversation:
 
-<img src="./images/guidedConvo1.png" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
-<img src="./images/guidedConvo2.png" alt="Screenshot" style="width: 300px;"/>
-<img src="./images/guidedConvo3.png" alt="Screenshot" style="width: 300px;"/>
-<img src="./images/guidedConvo4.png" alt="Screenshot" style="width: 300px;"/>
+    <img src="./images/guidedConvo1.png" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
+    <img src="./images/guidedConvo2.png" alt="Screenshot" style="width: 300px;"/>
+    <img src="./images/guidedConvo3.png" alt="Screenshot" style="width: 300px;"/>
+    <img src="./images/guidedConvo4.png" alt="Screenshot" style="width: 300px;"/>
 
 
 I'm going to demonstrate the creation of a simple bot that searches and filters over a dataset of classical musicians. First we'll set up our database, then we'll create our search service, and then we'll build our bot.
@@ -34,15 +34,15 @@ I'll start by noting the musicianData JSON file found in the data folder of this
 ### Create a Document DB database and collection. 
 1. Navigate to Document DB in the Azure Portal 
 
-<img src="./images/docDB1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+    <img src="./images/docDB1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
                                   
 2. Create Doc DB account
 
-<img src="./images/docDB2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+    <img src="./images/docDB2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 3. Create collection/add new DB
 
-<img src="./images/docDB3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+    <img src="./images/docDB3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 
 ### Upload JSON data
@@ -51,44 +51,44 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
 
 1. Once you've got the tool, navigate to the musician JSON data: 
 
-<img src="./images/dtui1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+    <img src="./images/dtui1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 2. Fill in target information
 
     1. Get connection strings from portal
 
-    <img src="./images/dtui2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/dtui2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
     2. Be sure to add Database = <DatabaseName>; to your connection string
 
-    <img src="./images/dtui3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/dtui3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
     3. Then upload your data: 
 
-    <img src="./images/dtui4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/dtui4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
     To see that our data has uploaded, we can go back to the portal, click query explorer and run the default query (SELECT * FROM c). 
 
-    <img src="./images/queryexplorer1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/queryexplorer1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 3. Create your Azure Search index
 
     1. Create an Azure Search service
 
-    <img src="./images/search1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/search1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
     2. Import Data from your Document DB collection
 
-    <img src="./images/search2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/search2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
     
     3. Create your Azure Search index
-    Here's where the magic starts to happen. You can see that Azure Search has accessed our data and pulled in each parameter of the JSON objects. Now we get to decide which of these parameters we want to search over, facet over, filter by and retrieve. Again we could generate our indeces programically, and in more complex use cases we would, but for the sake of simplicity we'll stick to the portal UI. Given that we want access to all of these properties we'll go ahead and make them all retrievable. We want to be able to facet (more details about faceting to come) and filter over musician's eras. Finally, we'll mark name as searchable so that our bot can search for musicians by their names. 
-    
-    <img src="./images/search3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+
+        Here's where the magic starts to happen. You can see that Azure Search has accessed our data and pulled in each parameter of the JSON objects. Now we get to decide which of these parameters we want to search over, facet over, filter by and retrieve. Again we could generate our indeces programically, and in more complex use cases we would, but for the sake of simplicity we'll stick to the portal UI. Given that we want access to all of these properties we'll go ahead and make them all retrievable. We want to be able to facet (more details about faceting to come) and filter over musician's eras. Finally, we'll mark name as searchable so that our bot can search for musicians by their names. 
+
+        <img src="./images/search3.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 4. Create your Azure Search indexer
-    As our data is subject to change, we need to be able to reindex that data. Azure Search allows you to index on a schedule or on demand, but for this demo
-    we'll index once only.
+    As our data is subject to change, we need to be able to reindex that data. Azure Search allows you to index on a schedule or on demand, but for this demo we'll index once only.
 
     <img src="./images/search4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 

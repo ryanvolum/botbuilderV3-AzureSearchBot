@@ -68,7 +68,7 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
         <img src="./images/dtui4.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
     To see that our data has uploaded, we can go back to the portal, click query explorer and run the default query (SELECT * FROM c). 
-
+        
         <img src="./images/queryexplorer1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 3. Create your Azure Search index

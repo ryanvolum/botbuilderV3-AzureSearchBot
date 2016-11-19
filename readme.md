@@ -18,11 +18,13 @@ More and more frequently we're seeing the value in bots that can reason over und
     <img src="./images/searchScore1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
     <img src="./images/searchScore2.PNG" alt="Screenshot" style="width: 536px;"/>
 
-2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for
+2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for. In this example, we use search to determine all of the facets of the underlying database's fields to quickly guide the conversation:
 
 <img src="./images/guidedConvo1.png" alt="Screenshot" style="width: 300px; padding-left: 40px;"/>
 <img src="./images/guidedConvo2.png" alt="Screenshot" style="width: 300px;"/>
 <img src="./images/guidedConvo3.png" alt="Screenshot" style="width: 300px;"/>
+<img src="./images/guidedConvo4.png" alt="Screenshot" style="width: 300px;"/>
+
 
 I'm going to demonstrate the creation of a simple bot that searches and filters over a dataset of classical musicians. First we'll set up our database, then we'll create our search service, and then we'll build our bot.
 

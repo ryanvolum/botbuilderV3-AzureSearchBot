@@ -15,9 +15,8 @@ More and more frequently we're seeing the value in bots that can reason over und
 
     * Search scores allow us to determine the confidence that we have about a specific search - allowing us to decide whether a piece of data is what a user is looking, order results based on our confidence, and curb our bot output based on confidence (e.g. "Hmm... were you looking for any of these events?" vs "Here is the event that best matches your search:") 
 
-<img src="./images/searchScore1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
-<img src="./images/searchScore2.PNG" alt="Screenshot" style="width: 536px;"/>
-
+    <img src="./images/searchScore1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+    <img src="./images/searchScore2.PNG" alt="Screenshot" style="width: 536px;"/>
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for
 

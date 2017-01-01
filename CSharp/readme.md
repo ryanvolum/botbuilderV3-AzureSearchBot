@@ -226,13 +226,13 @@ I will demonstrate the bot working in the bot framework emulator, but if deploye
 We should set `SearchName`,`IndexName`,`SearchKey` in Web.config.
 1. Access Azure portal and see Azure Search you created. You can see window below.
 
-<img src="../images/searchCredential1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="../images/searchCredential1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 2. You can check `SearchName` in Url (in this window, `masotabot`), so copy&paste it in Web.config.
 3. You can see `IndexName` in Indexes area (like `temp). Please copy and paste it in Web.config.
 4. Click [All settings]-[Keys]-[Manage query keys] and you can check Key. Please copy it and paste it in Web.config.
 
-<img src="../images/searchCredential2.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+<img src="../images/searchCredential2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 After setting web.config, you can start debugging. Let's try it out.
 

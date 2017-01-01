@@ -229,7 +229,7 @@ We should set `SearchName`,`IndexName`,`SearchKey` in Web.config.
 <img src="../images/searchCredential1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 
 2. You can check `SearchName` in Url (in this window, `masotabot`), so copy&paste it in Web.config.
-3. You can see `IndexName` in Indexes area (like `temp). Please copy and paste it in Web.config.
+3. You can see `IndexName` in Indexes area (like `temp`). Please copy and paste it in Web.config.
 4. Click [All settings]-[Keys]-[Manage query keys] and you can check Key. Please copy it and paste it in Web.config.
 
 <img src="../images/searchCredential2.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>

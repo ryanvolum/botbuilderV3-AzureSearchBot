@@ -224,6 +224,7 @@ I will demonstrate the bot working in the bot framework emulator, but if deploye
 
 ### How to set search credentials in Web.Config
 We should set `SearchName`,`IndexName`,`SearchKey` in Web.config.
+
 1. Access Azure portal and see Azure Search you created. You can see window below.
 
 <img src="../images/searchCredential1.png" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
@@ -244,7 +245,7 @@ Musician Explorer functionality:
 
 Note that the search scores returned with the filtered results are always 1. This is because a filter is essentially an exact match
 
-Musician Search functionality
+Musician Search functionality:
 
 <img src="../images/musicianSearch1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
 <br>

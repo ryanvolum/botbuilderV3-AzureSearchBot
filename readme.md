@@ -118,7 +118,8 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
 
 4. Build your Bot
 
-    The bot I will demonstrate is built in Node.js. The bot framework SDK is also available in C# - for a run through of a C# search bot visit https://github.com/Microsoft/BotBuilder/tree/master/CSharp/Samples/SearchPoweredBots. This bot will be fairly simple, but if you're new to bot building several of the concepts might be foreign. For a quick ramp up check out aka.ms/botcourse, specifically the sections about setting up a node project, using cards and using dialogs. 
+    The bot I will demonstrate is built in Node.js and C#. For understanding C# bot more, please see [this document](./CSharp/readme.md).
+    This bot will be fairly simple, but if you're new to bot building several of the concepts might be foreign. For a quick ramp up check out [aka.ms/botcourse](http://aka.ms/botcourse), specifically the sections about setting up a node project, using cards and using dialogs. 
 
     All of our connector logic is being stored in the connectorSetup.js. Here's where you would enter your appId and appPassword if you were going to 
     make this bot live or connect it to a non-emulator channel. 

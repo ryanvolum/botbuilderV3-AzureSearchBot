@@ -1,19 +1,24 @@
+// load environmental variables
+require('dotenv').config();
+
 require('./config.js')();
 require('./connectorSetup.js')();
 require('./searchHelpers.js')();
 require('./dialogs/results.js')();
-require('./dialogs/musicianExplorer.js')();
-require('./dialogs/musicianSearch.js')();
-
 
 const request = require('request');
 const restify = require('restify');
 const builder = require('botbuilder');
 
+const dialogs = {};
+dialogs.musicianExplorer = require('./dialogs/musicianExplorer.js');
+dialogs.musicianSearch = require('./dialogs/musicianSearch.js');
+
+
 //If testing via the emulator, no need for appId and appPassword. If publishing, enter appId and appPassword here 
 const connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID ? process.env.MICROSOFT_APP_ID : '',
-    appPassword: process.env.MICROSOFT_APP_PASSWORD ? process.env.MICROSOFT_APP_PASSWORD : '',
+    appId: process.env.MICROSOFT_APP_ID,
+    appPassword: process.env.MICROSOFT_APP_PASSWORD,
     gzipData: true
 });
 
@@ -48,7 +53,7 @@ bot.dialog('promptButtons', [
     }
 ]);
 
-bot.dialog('musicianExplorer', require('./dialogs/musicianExplorer.js'));
+bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog);
 
 // reset stuck dialogs in case of versioning
 bot.use(builder.Middleware.dialogVersion({ version: 0.2, resetCommand: /^reset/i }));

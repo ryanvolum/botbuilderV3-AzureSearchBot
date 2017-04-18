@@ -1,25 +1,27 @@
-module.exports = function () {
-    bot.dialog('/musicianSearch', [
-        function (session) {
+module.exports = {
+    id: 'musicianSearch',
+    dialog: [
+        (session) => {
             //Prompt for string input
-            builder.Prompts.text(session, "Type in the name of the musician you are searching for:");
+            builder.Prompts.text(session, 'What musician are you searching for?');
         },
-        function (session, results) {
+        (session, results) => {
             //Sets name equal to resulting input
-            var name = results.response;
+            const name = results.response;
 
-            var queryString = searchQueryStringBuilder('search= ' + name);
-            performSearchQuery(queryString, function (err, result) {
+            const queryString = searchQueryStringBuilder(`search= ${name}`);
+            performSearchQuery(queryString, (err, result) => {
                 if (err) {
-                    console.log("Error when searching for musician: " + err);
+                    console.log(`Error when retrieving musicians: ${err}`);
+                    session.endConversation(`Sorry, I couldn't load the data.`);
                 } else if (result && result['value'] && result['value'][0]) {
                     //If we have results send them to the showResults dialog (acts like a decoupled view)
-                    session.replaceDialog('/showResults', { result });
+                    session.replaceDialog('showResults', { result });
                 } else {
-                    session.endDialog("No musicians by the name \'" + name + "\' found");
+                    session.endConversation(`No musicians by the name '${name}' found`);
                 }
             })
         }
-    ]);
+    ]
 }
 

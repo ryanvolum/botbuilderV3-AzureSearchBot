@@ -1,15 +1,15 @@
 const builder = require('botbuilder');
 const searchHelper = require('../searchHelpers.js');
 
+// update this to be the name of your facet
 const facetName = 'Era';
 
 module.exports = {
     id: 'musicianExplorer',
+    title: 'Musician Explorer',
     dialog: [
         (session) => {
-            // Syntax for faceting results by a facet name
-
-            searchHelper.facetQuery('Era', (err, result) => {
+            searchHelper.facetQuery(facetName, (err, result) => {
                 if (err) {
                     console.log(`Error when faceting by ${facetName}: ${err}`);
                     session.endConversation(`Sorry, I ran into issues when talking to the server. Please try again.`);
@@ -17,31 +17,42 @@ module.exports = {
                     session.endConversation(`I'm sorry, I couldn't find any to show you.`);
                 } else {
                     const facetNames = [];
-                    //Pushes the name of each era into an array
+                    const message = new builder.Message(session);
+                    message.text = `Which ${facetName} are you interested in?`;
                     result.forEach(function (facet, i) {
-                        facetNames.push(`${facet['value']} (${facet.count})`);
+                        facetNames.push(facet.value);
+                        message.addAttachment(
+                            builder.CardAction.imBack(session, facet.value, `${facet.value} (${facet.count})`)
+                        );
                     });
                     //Prompts the user to select the era he/she is interested in
                     builder.Prompts.choice(session,
-                        "Which era of music are you interested in?",
-                        facetNames,
-                        { listStyle: builder.ListStyle.button }
+                        message,
+                        facetNames
                     );
                 }
             });
         },
         (session, results) => {
             //Chooses just the era name - parsing out the count
-            const facetValue = results.response.entity.split(' ')[0];;
+            const facetValue = results.response.entity;
 
-            //Syntax for filtering results by 'facet'. Note the $ in front of filter (OData syntax)
-            // TODO: Update this to use a helper function
-            var queryString = searchQueryStringBuilder(`$filter=${facetName} eq '${facetValue}'`);
-
-            performSearchQuery(queryString, function (err, result) {
+            searchHelper.filterQuery(facetName, facetValue, (err, result) => {
                 if (result) {
                     // results found
-                    session.replaceDialog('showResults', { result });
+                    var message = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
+                    args.result.forEach((musician) => {
+                        // custom card for musician
+                        // update with your specific fields for output
+                        message.addAttachment(
+                            new builder.HeroCard(session)
+                                .title(musician.Name)
+                                .subtitle("Era: " + musician.Era + " | " + "Search Score: " + musician['@search.score'])
+                                .text(musician.Description)
+                                .images([builder.CardImage.create(session, musician.imageURL)])
+                        );
+                    })
+                    session.endDialog(message);
                 } else if (err) {
                     // error
                     console.log(`Error when filtering by ${facetValue}: ${err}`);
@@ -50,7 +61,7 @@ module.exports = {
                     // no results or error
                     session.endConversation(`I couldn't find any results in ${facetValue}.`);
                 }
-            })
+            });
         }
     ]
 };

@@ -4,15 +4,45 @@ module.exports = function () {
     global.searchQueryStringBuilder = function (query) {
         return queryString + query;
     }
+}
 
-    global.performSearchQuery = function (queryString, callback) {
-        request(queryString, function (error, response, body) {
-            if (!error && response && response.statusCode == 200) {
-                var result = JSON.parse(body);
+
+const request = require('request');
+const rootQueryString = ``
+
+module.exports = {
+    
+    facetQuery: (facet, callback) => {
+        checkConfig();
+
+        const queryString = `${rootQueryString}&facet=${facet}`;
+        request(queryString, (error, response, body) => {
+            if(error) {
+                callback(error, null);
+            } else {
+                const result = JSON.parse(body);
+                if(!result && !result['@search.facets'] && !result['@search.facets'][facet]) {
+                    // No items for that facet found
+                    callback(null, null);
+                } else {
+                    callback(null, result['@search.facets'][facet]);
+                }
+            }
+        });
+    },
+    performSearchQuery: (queryString, callback) => {
+
+        request(queryString, (error, response, body) => {
+            if (!error && response && response.statusCode === 200) {
+                const result = JSON.parse(body);
                 callback(null, result);
             } else {
                 callback(error, null);
             }
         })
+    },
+    checkConfig: () => {
+        if (!rootQueryString)
+            throw 'Azure Search configuration information missing. Please set environmental variables in .env or on the application.';
     }
 }

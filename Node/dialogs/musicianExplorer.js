@@ -1,4 +1,5 @@
 const builder = require('botbuilder');
+const searchHelper = require('../searchHelpers.js');
 
 module.exports = {
     id: 'musicianExplorer',
@@ -6,14 +7,17 @@ module.exports = {
         (session) => {
             //Syntax for faceting results by 'Era'
             var queryString = searchQueryStringBuilder('facet=Era');
-            performSearchQuery(queryString, (err, result) => {
+
+            searchHelper.facetQuery('Era', (err, result) => {
                 if (err) {
                     console.log(`Error when faceting by era: ${err}`);
-                } else if (result && result['@search.facets'] && result['@search.facets'].Era) {
-                    const eras = result['@search.facets'].Era;
+                    session.endConversation(`Sorry, I ran into issues when talking to the server. Please try again.`);
+                } else if (!result) {
+                    session.endConversation(`I couldn't find any eras to show you`);
+                } else {
                     const eraNames = [];
                     //Pushes the name of each era into an array
-                    eras.forEach(function (era, i) {
+                    result.forEach(function (era, i) {
                         eraNames.push(`${era['value']} (${era.count})`);
                     })
                     //Prompts the user to select the era he/she is interested in
@@ -22,10 +26,8 @@ module.exports = {
                         eraNames,
                         { listStyle: builder.ListStyle.button }
                     );
-                } else {
-                    session.endDialog(`I couldn't find any genres to show you`);
                 }
-            })
+            });
         },
         (session, results) => {
             //Chooses just the era name - parsing out the count

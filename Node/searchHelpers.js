@@ -48,19 +48,5 @@ module.exports = {
                 }
             }
         });
-    },
-    performSearchQuery: (queryString, callback) => {
-        request(queryString, (error, response, body) => {
-            if (!error && response && response.statusCode === 200) {
-                const result = JSON.parse(body);
-                callback(null, result);
-            } else {
-                callback(error, null);
-            }
-        })
-    },
-    checkConfig: () => {
-        if (!rootQueryString)
-            throw 'Azure Search configuration information missing. Please set environmental variables in .env or on the application.';
     }
 }

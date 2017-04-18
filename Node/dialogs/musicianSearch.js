@@ -1,26 +1,29 @@
+const builder = require('botbuilder');
+const searchHelper = require('../searchHelpers.js');
+const messageHelper = require('../messageHelper.js');
+
 module.exports = {
     id: 'musicianSearch',
+    title: 'Musician Search',
     dialog: [
         (session) => {
             //Prompt for string input
-            builder.Prompts.text(session, 'What musician are you searching for?');
+            builder.Prompts.text(session, 'What are you searching for?');
         },
         (session, results) => {
             //Sets name equal to resulting input
-            const name = results.response;
+            const keyword = results.response;
 
-            const queryString = searchQueryStringBuilder(`search= ${name}`);
-            performSearchQuery(queryString, (err, result) => {
+            searchHelper.searchQuery(keyword, (err, result) => {
                 if (err) {
-                    console.log(`Error when retrieving musicians: ${err}`);
-                    session.endConversation(`Sorry, I couldn't load the data.`);
-                } else if (result && result['value'] && result['value'][0]) {
-                    //If we have results send them to the showResults dialog (acts like a decoupled view)
-                    session.replaceDialog('showResults', { result });
-                } else {
-                    session.endConversation(`No musicians by the name '${name}' found`);
+                    console.log(`Search query failed with ${err}`);
+                    session.endConversation(`Sorry, I had an error when talking to the server.`);
+                } else if (result) {
+                    const message = messageHelper.getMusiciansCarousel(session, result);
+                    session.endConversation(message);
                 }
-            })
+                session.reset('/');
+            });
         }
     ]
 }

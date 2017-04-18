@@ -24,6 +24,8 @@ const connector = new builder.ChatConnector({
 
 // create the bot
 const bot = new builder.UniversalBot(connector, (session) => session.replaceDialog('promptButtons'));
+bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog);
+bot.dialog(dialogs.musicianSearch.id, dialogs.musicianSearch.dialog);
 
 bot.dialog('promptButtons', [
     (session) => {
@@ -53,7 +55,6 @@ bot.dialog('promptButtons', [
     }
 ]);
 
-bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog);
 
 // reset stuck dialogs in case of versioning
 bot.use(builder.Middleware.dialogVersion({ version: 0.2, resetCommand: /^reset/i }));

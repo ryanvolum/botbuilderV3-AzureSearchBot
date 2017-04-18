@@ -21,12 +21,26 @@ module.exports = {
                 callback(error, null);
             } else {
                 const result = JSON.parse(body);
-                if(!result && !result['@search.facets'] && !result['@search.facets'][facet]) {
+                if(!result || !result['@search.facets'] || !result['@search.facets'][facet]) {
                     // No items for that facet found
                     callback(null, null);
                 } else {
                     callback(null, result['@search.facets'][facet]);
                 }
+            }
+        });
+    },
+    filterQuery: (filterName, filterValue, callback) => {
+        const queryString = `$filter=${filterName} eq '${filterValue}'`;
+
+        request(queryString, (error, response, body) => {
+            if(error) {
+                callback(error, null);
+            } else if(!result || !result['value'] || !result['value'][0]) {
+                // no items found
+                callback(null, null);
+            } else {
+                callback(null, result['value']);
             }
         });
     },

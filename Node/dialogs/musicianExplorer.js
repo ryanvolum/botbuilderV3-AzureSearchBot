@@ -1,5 +1,6 @@
 const builder = require('botbuilder');
 const searchHelper = require('../searchHelpers.js');
+const messageHelper = require('../messageHelper.js');
 
 // update this to be the name of your facet
 const facetName = 'Era';
@@ -17,14 +18,19 @@ module.exports = {
                     session.endConversation(`I'm sorry, I couldn't find any to show you.`);
                 } else {
                     const facetNames = [];
-                    const message = new builder.Message(session);
-                    message.text = `Which ${facetName} are you interested in?`;
+                    const buttons = [];
                     result.forEach(function (facet, i) {
                         facetNames.push(facet.value);
-                        message.addAttachment(
+                        buttons.push(
                             builder.CardAction.imBack(session, facet.value, `${facet.value} (${facet.count})`)
                         );
                     });
+
+                    // const message = new builder.Message(session);
+                    const card = new builder.ThumbnailCard(session).buttons(buttons);
+                    const message = new builder.Message(session).addAttachment(card);
+                    card.title = `Which ${facetName} are you interested in?`;
+
                     //Prompts the user to select the era he/she is interested in
                     builder.Prompts.choice(session,
                         message,
@@ -39,20 +45,8 @@ module.exports = {
 
             searchHelper.filterQuery(facetName, facetValue, (err, result) => {
                 if (result) {
-                    // results found
-                    var message = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
-                    args.result.forEach((musician) => {
-                        // custom card for musician
-                        // update with your specific fields for output
-                        message.addAttachment(
-                            new builder.HeroCard(session)
-                                .title(musician.Name)
-                                .subtitle("Era: " + musician.Era + " | " + "Search Score: " + musician['@search.score'])
-                                .text(musician.Description)
-                                .images([builder.CardImage.create(session, musician.imageURL)])
-                        );
-                    })
-                    session.endDialog(message);
+                    const message = messageHelper.getMusiciansCarousel(session, result);
+                    session.endConversation(message);
                 } else if (err) {
                     // error
                     console.log(`Error when filtering by ${facetValue}: ${err}`);
@@ -61,6 +55,7 @@ module.exports = {
                     // no results or error
                     session.endConversation(`I couldn't find any results in ${facetValue}.`);
                 }
+                session.reset('/');
             });
         }
     ]

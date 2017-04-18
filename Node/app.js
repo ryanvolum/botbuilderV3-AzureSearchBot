@@ -1,11 +1,6 @@
 // load environmental variables
 require('dotenv').config();
 
-require('./config.js')();
-require('./connectorSetup.js')();
-require('./searchHelpers.js')();
-require('./dialogs/results.js')();
-
 const request = require('request');
 const restify = require('restify');
 const builder = require('botbuilder');
@@ -27,19 +22,33 @@ const bot = new builder.UniversalBot(connector, (session) => {
     const message = new builder.Message(session);
     message.text = 'How would you like to search?';
     message.attachments([
-        builder.CardAction.imBack(
-            session, dialogs.musicianExplorer.title
-        ),
-        builder.CardAction.imBack(
-            session, dialogs.musicianSearch.title
-        ),
+        new builder.ThumbnailCard(session)
+            .buttons([
+                builder.CardAction.imBack(
+                    session, dialogs.musicianExplorer.title, dialogs.musicianExplorer.title
+                ),
+                builder.CardAction.imBack(
+                    session, dialogs.musicianSearch.title, dialogs.musicianSearch.title
+                )
+            ])
+            .title('How would you like to search?')
     ]);
+    session.endConversation(message);
 });
 
 // register the two dialogs
 // musicianExplorer will provide a facet or category based search
 bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog)
-    .triggerAction({ matches: new RegExp(dialogs.musicianExplorer.title, 'i') });
+    .triggerAction({ 
+        // matches: new RegExp(dialogs.musicianExplorer.title, 'i')
+        onFindAction: (context, callback) => {
+            let score = 0;
+            if(context.message.text === dialogs.musicianExplorer.title) {
+                score = 200;
+            }
+            callback(null, score);
+        }
+    });
 
 // musicianSearch will provide a classic search
 bot.dialog(dialogs.musicianSearch.id, dialogs.musicianSearch.dialog)

@@ -39,16 +39,7 @@ const bot = new builder.UniversalBot(connector, (session) => {
 // register the two dialogs
 // musicianExplorer will provide a facet or category based search
 bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog)
-    .triggerAction({ 
-        // matches: new RegExp(dialogs.musicianExplorer.title, 'i')
-        onFindAction: (context, callback) => {
-            let score = 0;
-            if(context.message.text === dialogs.musicianExplorer.title) {
-                score = 200;
-            }
-            callback(null, score);
-        }
-    });
+    .triggerAction({ matches: new RegExp(dialogs.musicianSearch.title, 'i') });
 
 // musicianSearch will provide a classic search
 bot.dialog(dialogs.musicianSearch.id, dialogs.musicianSearch.dialog)

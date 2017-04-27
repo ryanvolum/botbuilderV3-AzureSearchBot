@@ -14,8 +14,8 @@ More and more frequently we're seeing the value in bots that can reason over und
 
     * Search scores allow us to determine the confidence that we have about a specific search - allowing us to decide whether a piece of data is what a user is looking, order results based on our confidence, and curb our bot output based on confidence (e.g. "Hmm... were you looking for any of these events?" vs "Here is the event that best matches your search:") 
 
-    <img src="./images/searchScore1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
-    <img src="./images/searchScore2.PNG" alt="Screenshot" style="width: 536px;"/>
+        <img src="./images/searchScore1.PNG" alt="Screenshot" style="width: 500px; padding-left: 40px;"/>
+        <img src="./images/searchScore2.PNG" alt="Screenshot" style="width: 536px;"/>
 
 2. Guiding a user through a conversation that facets and filters a dataset until it finds what a user is looking for. In this example, we use search to determine all of the facets of the underlying database's fields to quickly guide the conversation:
 
@@ -28,7 +28,7 @@ More and more frequently we're seeing the value in bots that can reason over und
 I'm going to demonstrate the creation of a simple bot that searches and filters over a dataset of classical musicians. First we'll set up our database, then we'll create our search service, and then we'll build our bot.
 
 ## Database Setup - DocumentDB 
-I'll start by noting the musicianData JSON file found in the data folder of this project. Each JSON object is made up of four properties: musician name, era, description, and image url. Our goal will be to allow users to quickly find a specific musician or filter musicians by their different eras. Our dataset only contains 19 musicians, but this approach can easily scale to millions of datapoints. Azure Search is capable of indexing data from several data sources including Document DB, Blob Storage, Table Storage and Azure SQL. We'll use Document DB as a demonstration. 
+I'll start by noting [musician JSON file](./data/clasicalMusicians.json), found in the data folder of this project. Each JSON object is made up of four properties: musician name, era, description, and image url. Our goal will be to allow users to quickly find a specific musician or filter musicians by their different eras. Our dataset only contains 19 musicians, but this approach can easily scale to millions of data points. Azure Search is capable of indexing data from several data sources including Document DB, Blob Storage, Table Storage and Azure SQL. We'll use Document DB as a demonstration. 
 
 ### Create a Document DB database and collection. 
 1. Navigate to Document DB in the Azure Portal 
@@ -124,156 +124,142 @@ sake of simplicity I'm going to use the Document DB Data Migration Tool (documen
     All of our connector logic is being stored in the connectorSetup.js. Here's where you would enter your appId and appPassword if you were going to 
     make this bot live or connect it to a non-emulator channel. 
 
-    Let's dive into the dialog logic now:
+    Let's dive into the dialog logic now.
 
-    All messages get routed into the root ('/') dialog. From here, we replace the dialog with the promptButtons dialog. 
-    ```javascript
-    bot.dialog('/', [
-        function (session) {
-            session.replaceDialog('/promptButtons');
-        }
-    ]);
+    We have two supporting dialogs - [musicianExplorer](./node/dialogs/musicianExplorer.js), which will provide a menu based system to explore the data, and [musicianSearch](./node/dialogs/musicianSearch.js), which allows the user to search for what they want. In each of the dialog files, you ill notice there is an **id**, **title**, and the **dialog**. The id is used when registering the dialog in the bot, while the title is used for the text that will trigger the dialog. Finally, the dialog property contains the code that will run. By doing this, we simplify the registration of the dialogs, and the flow of the bot. When looking at the code, you could see how this might be automated.
+
+    ``` javascript
+        // beginning in app.js
+        const dialogs = {};
+        dialogs.musicianExplorer = require('./dialogs/musicianExplorer.js');
+        dialogs.musicianSearch = require('./dialogs/musicianSearch.js');
+
+        // register the two dialogs after the bot is created
+        // musicianExplorer will provide a facet or category based search
+        bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog)
+            .triggerAction({ matches: new RegExp(dialogs.musicianSearch.title, 'i') });
+
+        // musicianSearch will provide a classic search
+        bot.dialog(dialogs.musicianSearch.id, dialogs.musicianSearch.dialog)
+            .triggerAction({ matches: new RegExp(dialogs.musicianSearch.title, 'i') });
     ```
-    In the promptButtons dialog we use the Prompts.choice method to prompt the user with our choices (in this case Musician Explorer and Musician Search) defined in the `choices` array. Once the user answers, we move into the next function which uses a switch statement to decide which dialog to route us to. Note that the musicianExplorer and musicianSearch dialogs each have their own .js file in the 'dialogs' folder and were included at the start of app.js.
+
+    All messages get routed into the root dialog. From here, we prompt the user by providing buttons. Buttons are an effective UI, as they help guide the user to the information they're searching for. By configuring the buttons to use `imBack`, the client will send the text back to the bot. As a result, we can simply end the conversation, and the bot will interpret the next message, just as if the user had typed it in. By using the title property, we simplify our code by not needing to know the name of the dialog. This might also be done programmatically.
 
     ```javascript
-    bot.dialog('/promptButtons', [
-        function (session) {
-            var choices = ["Musician Explorer", "Musician Search"]
-            builder.Prompts.choice(session, "How would you like to explore the classical music bot?", choices);
+    // create the bot
+    const bot = new builder.UniversalBot(connector, (session) => {
+        const message = new builder.Message(session);
+        message.text = 'How would you like to search?';
+        message.attachments([
+            new builder.ThumbnailCard(session)
+                .buttons([
+                    builder.CardAction.imBack(
+                        session, dialogs.musicianExplorer.title, dialogs.musicianExplorer.title
+                    ),
+                    builder.CardAction.imBack(
+                        session, dialogs.musicianSearch.title, dialogs.musicianSearch.title
+                    )
+                ])
+                .title('How would you like to search?')
+        ]);
+        session.endConversation(message);
+    });
+    ```
+
+    The musician search dialog first prompts the user to type in the name of the musician that he/she is looking for, and then executes the search. After the search is completed, the bot either displays the results, or a message indicating no results were found.
+
+    ``` javascript
+        // from ./Node/dialogs/musicianSearch.js
+        // below is just the dialog
+        (session) => {
+            //Prompt for string input
+            builder.Prompts.text(session, 'What are you searching for?');
         },
-        function (session, results) {
-            if (results.response) {
-                var selection = results.response.entity;
-                // route to corresponding dialogs
-                switch (selection) {
-                    case "Musician Explorer":
-                        session.replaceDialog('/musicianExplorer');
-                        break;
-                    case "Musician Search":
-                        session.replaceDialog('/musicianSearch');
-                        break;
-                    default:
-                        session.reset('/');
-                        break;
+        (session, results) => {
+            //Sets name equal to resulting input
+            const keyword = results.response;
+
+            searchHelper.searchQuery(keyword, (err, result) => {
+                if (err) {
+                    console.log(`Search query failed with ${err}`);
+                    session.endConversation(`Sorry, I had an error when talking to the server.`);
+                } else if (result) {
+                    const message = messageHelper.getMusiciansCarousel(session, result);
+                    session.endConversation(message);
                 }
-            }
+                session.reset('/');
+            });
         }
-    ]);
     ```
-    The musician search dialog first prompts the user to type in the name of the musician that he/she is looking for:
 
-    ```javascript
-    bot.dialog('/musicianSearch', [
-        function (session) {
-            builder.Prompts.text(session, "Type in the name of the musician you are searching for:");
-        },
-    ```
-    It then gets the name the user typed in and passes in 'search= ' + name to the searchQueryStringBuilder to generate a basic search against our index. If it gets results from the query it routes us to showResults, which we can think of as a view layer. Note that we pass {results} to the showResults dialog. The showResults dialog receives these as a property as part of an `args` parameter which we will explore later. If the search renders no results then we send `session.endDialog("No musicians by the name \'" + name + "\' found");` to the user. 
+    The dialog uses two helpers, a search helper and a message helper. The search helper contains the code necessary to make the search to Azure Search. The message helper simplifies the creation of the card. You can explore both of those files in the Node directory.
 
-    ```javascript
-    function (session, results) {
-        //Sets name equal to resulting input
-        var name = results.response;
-        var queryString = searchQueryStringBuilder('search= ' + name);
-        performSearchQuery(queryString, function (err, result) {
-            if (err) {
-                console.log("Error when searching for musician: " + err);
-            } else if (result && result['value'] && result['value'][0]) {
-                //If we have results send them to the showResults dialog (acts like a decoupled view)
-                session.replaceDialog('/showResults', { result });
-            } else {
-                session.endDialog("No musicians by the name \'" + name + "\' found");
-            }
-        })
-    }
-    ```
-    Note that our error handling for this example simply logs the error to console - in a real world bot we would want to be more involved in 
+    > Note that our error handling for this example simply logs the error to console - in a real world bot we would want to be more involved in 
     our error handling. 
 
     Our musician explorer is a bit more involved. First it gathers our era facets and prompts the user to choose which one he/she is interested in. 
-    Again we create a queryString (this time passing 'facet=Era') and perform our search query, which gives us a JSON response of all of the eras of musicians that are represented in our index:
+    Again it uses our search helper to perform the query, and retrieve the facets of our data.
 
     ```javascript
-        bot.dialog('/musicianExplorer', [
-            function (session) {
-                //Syntax for faceting results by 'Era'
-                var queryString = searchQueryStringBuilder('facet=Era');
-                performSearchQuery(queryString, function (err, result) {
-                    if (err) {
-                        console.log("Error when faceting by era:" + err);
-                    } else if (result && result['@search.facets'] && result['@search.facets'].Era) {
-                        eras = result['@search.facets'].Era;
-                        var eraNames = [];
-                        //Pushes the name of each era into an array
-                        eras.forEach(function (era, i) {
-                            eraNames.push(era['value'] + " (" + era.count + ")");
-                        })    
-                        //Prompts the user to select the era he/she is interested in
-                        builder.Prompts.choice(session, "Which era of music are you interested in?", eraNames);
-                    } else {
-                        session.endDialog("I couldn't find any genres to show you");
-                    }
-                })
-    ```
-
-    Once the user selects the era that they are interested in we perform a filter query, passing $filter=Era eq selectedEra
-
-    ```javascript
-    function (session, results) {
-        //Chooses just the era name - parsing out the count
-        var era = results.response.entity.split(' ')[0];;
-        //Syntax for filtering results by 'era'. Note the $ in front of filter (OData syntax)
-        var queryString = searchQueryStringBuilder('$filter=Era eq ' + '\'' + era + '\'');
-        performSearchQuery(queryString, function (err, result) {
-            if (err) {
-                console.log("Error when filtering by genre: " + err);
-            } else if (result && result['value'] && result['value'][0]) {
-                //If we have results send them to the showResults dialog (acts like a decoupled view)
-                session.replaceDialog('/showResults', { result });
-            } else {
-                session.endDialog("I couldn't find any musicians in that era :0");
-            }
-        })
-    }
-    ```
-    This gives us all of the musicians that map to the era the user chose. Once we have results, we again send them to our showResults dialog.
-
-    The `performSearchQuery` function performs a basic query using the request library. Note, we're performing a GET for this example, but for production bots/apps you may consider using a POST so that you can place you api key in the POST header
-
-    ```javascript
-        global.performSearchQuery = function (queryString, callback) {
-            request(queryString, function (error, response, body) {
-                if (!error && response && response.statusCode == 200) {
-                    var result = JSON.parse(body);
-                    callback(null, result);
+        // from ./Node/dialogs/musicianExplorer.js
+        // the first method in the dialog
+        (session) => {
+            searchHelper.facetQuery(facetName, (err, result) => {
+                if (err) {
+                    console.log(`Error when faceting by ${facetName}: ${err}`);
+                    session.endConversation(`Sorry, I ran into issues when talking to the server. Please try again.`);
+                } else if (!result) {
+                    session.endConversation(`I'm sorry, I couldn't find any to show you.`);
                 } else {
-                    callback(error, null);
+                    const facetNames = [];
+                    const buttons = [];
+                    result.forEach(function (facet, i) {
+                        facetNames.push(facet.value);
+                        buttons.push(
+                            builder.CardAction.imBack(session, facet.value, `${facet.value} (${facet.count})`)
+                        );
+                    });
+
+                    // const message = new builder.Message(session);
+                    const card = new builder.ThumbnailCard(session).buttons(buttons);
+                    const message = new builder.Message(session).addAttachment(card);
+                    card.title = `Which ${facetName} are you interested in?`;
+
+                    //Prompts the user to select the era he/she is interested in
+                    builder.Prompts.choice(session,
+                        message,
+                        facetNames
+                    );
                 }
-            })
-        }
+            });
+        },
     ```
 
-    The showResults dialog receives the results from the musicianExplorer and musicianSearch dialogs as properties of the `args` parameter. It then creates a new message with a carousel layout, `var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);`, and adds a hero card attachment with the name, era, search score, description and image for each musician.
+    Once the user selects the era that they are interested in we perform a filter query via our search helper. Below is the bot code, which will perform a search on that facet, and then return the results (if there are any) to the user.
 
     ```javascript
-            function (session, args) {
-                var msg = new builder.Message(session).attachmentLayout(builder.AttachmentLayout.carousel);
-                if (args.result) {
-                    args.result['value'].forEach(function (musician, i) {
-                        var img = musician.imageURL;
-                        msg.addAttachment(
-                            new builder.HeroCard(session)
-                                .title(musician.Name)
-                                .subtitle("Era: " + musician.Era + " | " + "Search Score: " + musician['@search.score'])
-                                .text(musician.Description)
-                                .images([builder.CardImage.create(session, img)])
-                        );
-                    })
-                    session.endDialog(msg);
+        // from ./Node/dialogs/musicianExplorer.js
+        // the second method in the dialog
+        (session, results) => {
+            //Chooses just the era name - parsing out the count
+            const facetValue = results.response.entity;
+
+            searchHelper.filterQuery(facetName, facetValue, (err, result) => {
+                if (result) {
+                    const message = messageHelper.getMusiciansCarousel(session, result);
+                    session.endConversation(message);
+                } else if (err) {
+                    // error
+                    console.log(`Error when filtering by ${facetValue}: ${err}`);
+                    session.endConversation(`Sorry, I had an error when loading ${facetValue}`);
+                } else {
+                    // no results or error
+                    session.endConversation(`I couldn't find any results in ${facetValue}.`);
                 }
-            }
-        ])
+                session.reset('/');
+            });
+        }
     ```
 
     Finally, let's test our bot out. Either deploy your bot to an Azure web app and fill in the process.env variables in the portal, or add your search credentials in the config.js file. I will demonstrate the bot working in the bot framework emulator, but if deployed, this bot could be enabled on several different channels. 

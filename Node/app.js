@@ -39,7 +39,7 @@ const bot = new builder.UniversalBot(connector, (session) => {
 // register the two dialogs
 // musicianExplorer will provide a facet or category based search
 bot.dialog(dialogs.musicianExplorer.id, dialogs.musicianExplorer.dialog)
-    .triggerAction({ matches: new RegExp(dialogs.musicianSearch.title, 'i') });
+    .triggerAction({ matches: new RegExp(dialogs.musicianExplorer.title, 'i') });
 
 // musicianSearch will provide a classic search
 bot.dialog(dialogs.musicianSearch.id, dialogs.musicianSearch.dialog)
@@ -52,6 +52,6 @@ bot.use(builder.Middleware.dialogVersion({ version: 0.2, resetCommand: /^reset/i
 const server = restify.createServer();
 server.post('/api/messages', connector.listen());
 
-server.listen(process.env.PORT, () => {
+server.listen(3978, () => {
     console.log('%s listening to %s', server.name, server.url);
 });

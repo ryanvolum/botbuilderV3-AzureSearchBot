@@ -8,7 +8,7 @@ module.exports = {
     dialog: [
         (session) => {
             //Prompt for string input
-            builder.Prompts.text(session, 'What are you searching for?');
+            builder.Prompts.text(session, 'Who are you searching for?');
         },
         (session, results) => {
             //Sets name equal to resulting input
@@ -18,8 +18,11 @@ module.exports = {
                 if (err) {
                     console.log(`Search query failed with ${err}`);
                     session.endConversation(`Sorry, I had an error when talking to the server.`);
-                } else if (result) {
+                } else if (result && result.length > 0) {
                     const message = messageHelper.getMusiciansCarousel(session, result);
+                    session.endConversation(message);
+                } else {
+                    const message = "I couldn't find any musician by that name";
                     session.endConversation(message);
                 }
                 session.reset('/');
